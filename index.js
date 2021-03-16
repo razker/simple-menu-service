@@ -20,11 +20,21 @@ app.get('/getRestaurantsDetails', async (req,res) => {
 
     const database = client.db("restaurants_app");
     const restaurants = database.collection("restaurants_details");
+    const menuItems = database.collection("menu_items");
 
     const restaurantDataCursor = await restaurants.find();
+    const restaurantsData = await restaurantDataCursor.toArray();
 
-    const data = await restaurantDataCursor.toArray();
-    res.send(data);
+    let restaurantsWithMenu = [];
+
+    for (let index = 0 ; index < restaurantsData.length ; index ++){
+        const returnedData = await menuItems.findOne({"restaurantId": String(restaurantsData[index].restaurantId)});
+        if (returnedData){
+            restaurantsWithMenu.push(restaurantsData[index]);
+        }
+    }
+
+    res.send(restaurantsWithMenu);
 
 });
 
