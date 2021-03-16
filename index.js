@@ -1,10 +1,9 @@
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
-
+require('dotenv').config();
 const SERVER_CONFIGS = require('./constants/server');
 const configureServer = require('./server');
-require('dotenv').config();
 
 const app = express();
 configureServer(app);
@@ -12,7 +11,6 @@ configureServer(app);
 const dbUserName = process.env.DB_USER_NAME;
 const dbPassword = process.env.DB_PASSWORD;
 const dbClusterUrl = process.env.DB_CLUSTER_URL;
-
 const uri = `mongodb+srv://${dbUserName}:${dbPassword}@${dbClusterUrl}/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
