@@ -16,42 +16,53 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 app.get('/getRestaurantsDetails', async (req,res) => {
 
-    const database = client.db("restaurants_app");
-    const restaurants = database.collection("restaurants_details");
-    const menuItems = database.collection("menu_items");
+    try {
+        const database = client.db("restaurants_app");
+        const restaurants = database.collection("restaurants_details");
+        const menuItems = database.collection("menu_items");
 
-    const restaurantDataCursor = await restaurants.find();
-    const restaurantsData = await restaurantDataCursor.toArray();
+        const restaurantDataCursor = await restaurants.find();
+        const restaurantsData = await restaurantDataCursor.toArray();
 
-    let restaurantsWithMenu = [];
+        let restaurantsWithMenu = [];
 
-    for (let index = 0 ; index < restaurantsData.length ; index ++){
-        const returnedData = await menuItems.findOne({"restaurantId": String(restaurantsData[index].restaurantId)});
-        if (returnedData){
-            restaurantsWithMenu.push(restaurantsData[index]);
+        for (let index = 0; index < restaurantsData.length; index++) {
+            const returnedData = await menuItems.findOne({"restaurantId": String(restaurantsData[index].restaurantId)});
+            if (returnedData) {
+                restaurantsWithMenu.push(restaurantsData[index]);
+            }
         }
-    }
 
-    res.send(restaurantsWithMenu);
+        res.send(restaurantsWithMenu);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
+    }
 
 });
 
 app.get('/getMenuDetails', async (req,res) => {
     const { restaurantId } = req.query;
-    const database = client.db("restaurants_app");
-    const menuItems = database.collection("menu_items");
-    const restaurantDataCursor = await menuItems.find({"restaurantId": String(restaurantId)});
+    try{
+        const database = client.db("restaurants_app");
+        const menuItems = database.collection("menu_items");
+        const restaurantDataCursor = await menuItems.find({"restaurantId": String(restaurantId)});
 
-    const data = await restaurantDataCursor.toArray();
-    res.send(data);
+        const data = await restaurantDataCursor.toArray();
+        res.send(data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
+    }
+
 });
 
 app.post('/createMenuItem', async (req, res) => {
     const { title, description, price, menuType, restaurantId } = req.body;
-    const database = client.db("restaurants_app");
-    const menuItems = database.collection("menu_items");
 
     try {
+        const database = client.db("restaurants_app");
+        const menuItems = database.collection("menu_items");
         const insertResult = await menuItems.insertOne(
             {
                     title,
@@ -63,18 +74,19 @@ app.post('/createMenuItem', async (req, res) => {
 
         res.send({success: insertResult.result.n > 0});
 
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
     }
 
 });
 
 app.put('/updateMenuItem', async (req,res) => {
     const { id, title, description, price, menuType } = req.body;
-    const database = client.db("restaurants_app");
-    const menuItems = database.collection("menu_items");
 
     try {
+        const database = client.db("restaurants_app");
+        const menuItems = database.collection("menu_items");
         const updateResult = await menuItems.updateOne(
             { "_id" : ObjectID(id) },
             { $set: {
@@ -86,24 +98,27 @@ app.put('/updateMenuItem', async (req,res) => {
 
         res.send({success: updateResult.result.n > 0});
 
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
     }
 })
 
 app.delete('/deleteMenuItem', async (req,res) => {
     const { id } = req.body;
-    const database = client.db("restaurants_app");
-    const menuItems = database.collection("menu_items");
 
     try {
+        const database = client.db("restaurants_app");
+        const menuItems = database.collection("menu_items");
+
         const deleteResult = await menuItems.deleteOne(
             { "_id" : ObjectID(id) });
 
         res.send({success: deleteResult.result.n > 0});
 
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
     }
 })
 
