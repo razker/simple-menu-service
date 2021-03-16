@@ -8,11 +8,7 @@ const configureServer = require('./server');
 const app = express();
 configureServer(app);
 
-const dbUserName = process.env.DB_USER_NAME;
-const dbPassword = process.env.DB_PASSWORD;
-const dbClusterUrl = process.env.DB_CLUSTER_URL;
-const uri = `mongodb+srv://${dbUserName}:${dbPassword}@${dbClusterUrl}/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.get('/getRestaurantsDetails', async (req,res) => {
 
