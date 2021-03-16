@@ -17,7 +17,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 app.get('/getRestaurantsDetails', async (req,res) => {
 
     try {
-        await client.connect();
         const database = client.db("restaurants_app");
         const restaurants = database.collection("restaurants_details");
         const menuItems = database.collection("menu_items");
@@ -45,7 +44,6 @@ app.get('/getRestaurantsDetails', async (req,res) => {
 app.get('/getMenuDetails', async (req,res) => {
     const { restaurantId } = req.query;
     try{
-        await client.connect();
         const database = client.db("restaurants_app");
         const menuItems = database.collection("menu_items");
         const restaurantDataCursor = await menuItems.find({"restaurantId": String(restaurantId)});
@@ -63,7 +61,6 @@ app.post('/createMenuItem', async (req, res) => {
     const { title, description, price, menuType, restaurantId } = req.body;
 
     try {
-        await client.connect();
         const database = client.db("restaurants_app");
         const menuItems = database.collection("menu_items");
         const insertResult = await menuItems.insertOne(
@@ -88,7 +85,6 @@ app.put('/updateMenuItem', async (req,res) => {
     const { id, title, description, price, menuType } = req.body;
 
     try {
-        await client.connect();
         const database = client.db("restaurants_app");
         const menuItems = database.collection("menu_items");
         const updateResult = await menuItems.updateOne(
@@ -112,7 +108,6 @@ app.delete('/deleteMenuItem', async (req,res) => {
     const { id } = req.body;
 
     try {
-        await client.connect();
         const database = client.db("restaurants_app");
         const menuItems = database.collection("menu_items");
 
@@ -128,6 +123,7 @@ app.delete('/deleteMenuItem', async (req,res) => {
 })
 
 app.listen(SERVER_CONFIGS.PORT, async error => {
+    await client.connect();
     if(error) throw error;
     console.log('Server running on port: ' + SERVER_CONFIGS.PORT);
 });
