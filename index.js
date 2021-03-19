@@ -23,7 +23,7 @@ app.get('/getRestaurantsDetails', async (req,res) => {
         let restaurantsWithMenu = [];
 
         for (let index = 0; index < restaurantsData.length; index++) {
-            const returnedData = await menuItems.findOne({"restaurantId": String(restaurantsData[index].restaurantId)});
+            const returnedData = await menuItems.findOne({"restaurantId": String(restaurantsData[index]._id)});
             if (returnedData) {
                 restaurantsWithMenu.push(restaurantsData[index]);
             }
